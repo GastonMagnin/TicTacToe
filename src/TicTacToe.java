@@ -12,6 +12,7 @@ public class TicTacToe {
 		} while (!(input.equals("j") || input.equals("n")));
 		if (input.equals("n")) {
 			System.out.println("Bye");
+			sc.close();
 			return;
 		}
 		int rows = 0;
@@ -30,7 +31,6 @@ public class TicTacToe {
 		int inputRow;
 		do {
 			printField(container);
-			// TODO better input/prompt Error handling
 			boolean valid = false;
 			do {
 				try {
@@ -40,8 +40,7 @@ public class TicTacToe {
 					container = checkPosibilities(container);
 					currentPlayer = !currentPlayer;
 					valid = true;
-				} catch (java.util.InputMismatchException e) {//java.lang.ArrayIndexOutOfBoundsException e) {
-					System.out.println(e.getMessage() + e.getLocalizedMessage());
+				} catch (java.lang.ArrayIndexOutOfBoundsException e) {
 					System.out.println("Bitte geben sie einen Wert ein der innerhalb des Spielfelds liegt");
 				}
 			} while (!valid);
@@ -83,7 +82,6 @@ public class TicTacToe {
 				for (int row : columnsPosibilities[column]) {
 					columnString += container[0][row][column];
 				}
-				System.out.println(columnString + "column");
 				if (columnString.contains("1") && columnString.contains("2")) {
 					columnsPosibilities[column] = null;
 					continue;
@@ -123,7 +121,6 @@ public class TicTacToe {
 						container[3][0][0] = 0;
 					}
 				}
-				System.out.println(rowString);
 			}
 		}
 		
