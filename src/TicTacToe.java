@@ -1,7 +1,10 @@
 import java.util.Scanner;
 
 public class TicTacToe {
+<<<<<<< HEAD
 
+=======
+>>>>>>> 1b76c912cc5922a186098df66504861e8ce9992e
 	public static void main(String[] args) {
 		Scanner sc = new Scanner(System.in);
 		String input = "";
@@ -16,11 +19,11 @@ public class TicTacToe {
 		}
 		int rows = 0;
 		do {
-			rows = getNextInt(sc, "Wieviele Zeilen soll das Spielfeld haben?\nBitte geben sie eine ganze Zahl über 0 ein");
+			rows = getNextInt(sc, "Wieviele Zeilen soll das Spielfeld haben?\nBitte geben sie eine ganze Zahl ueber 0 ein");
 		} while (rows <= 0);
 		int columns = 0;
 		do {
-			columns = getNextInt(sc, "Wieviele Spalten soll das Spielfeld haben?\nBitte geben sie eine ganze Zahl über 0 ein");
+			columns = getNextInt(sc, "Wieviele Spalten soll das Spielfeld haben?\nBitte geben sie eine ganze Zahl ueber 0 ein");
 		} while (columns <= 0);
 
 		int[][][] container = generatePosibilities(rows, columns);
@@ -36,7 +39,7 @@ public class TicTacToe {
 					System.out.println((currentPlayer ? "Spieler1" : "Spieler2") + " ist am Zug"); 
 					inputRow = getNextInt(sc, "Geben sie die Zeile ihrer Auswahl ein");
 					container[0][inputRow + 1][getNextInt(sc, "Geben sie die Spalte ihrer Auswahl ein") + 1] = (currentPlayer) ? 1 : 2;
-					container = checkPosibilities(container);
+					checkPosibilities(container);
 					currentPlayer = !currentPlayer;
 					valid = true;
 				} catch (java.lang.ArrayIndexOutOfBoundsException e) {
@@ -67,7 +70,7 @@ public class TicTacToe {
 		return container;
 	}
 
-	public static int[][][] checkPosibilities(int[][][] container) {
+	public static void checkPosibilities(int[][][] container) {
 		int[][] columnsPosibilities = container[1];
 		int[][] rowsPosibilities = container[2];
 		boolean rowsLeft = false;
@@ -127,15 +130,14 @@ public class TicTacToe {
 		container[2] = rowsPosibilities;
 		container[3][0][1] = rowsLeft ? 1 : 0;
 		container[3][0][2] = columnsLeft ? 1 : 0;
-		container = (container[3][0][3] != 0) ? checkDiagonal(container) : container;
+		if(container[3][0][3] != 0) checkDiagonal(container);
 		if ((container[3][0][1] + container[3][0][2] + container[3][0][3]) == 0){
 			container[3][0][0] = 0;
 			System.out.println("Draw, there is no posibility to win left");
 		}
-		return container;
 	}
 
-	public static int[][][] checkDiagonal(int[][][] container) {
+	public static void checkDiagonal(int[][][] container) {
 
 		boolean checkDia = true;
 		String diaString = "";
@@ -162,7 +164,6 @@ public class TicTacToe {
 		}
 
 		container[3][0][3] = checkDia ? 1 : 0;
-		return container;
 
 	}
 
@@ -196,7 +197,7 @@ public class TicTacToe {
 				// Clear Scanner
 				if (sc.hasNext())
 					sc.nextLine();
-				System.out.println("Ungültige Eingabe, bitte geben sie eine ganze Zahl ein");
+				System.out.println("Ungueltige Eingabe, bitte geben sie eine ganze Zahl ein");
 			}
 		} while (!valid);
 		return input;
