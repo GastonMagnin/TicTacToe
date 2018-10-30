@@ -1,3 +1,4 @@
+
 import java.util.Scanner;
 
 public class TicTacToe {
@@ -43,30 +44,52 @@ public class TicTacToe {
 		myBoolean checkHorizontal = new myBoolean(true);
 		myBoolean checkVertical = new myBoolean(true);
 		myBoolean checkDiagonal = new myBoolean((rows == columns) ? true : false);
+
 		int[][] field = new int[rows][columns];
 		int[][] rowsPosibilities = new int[rows][columns];
 		int[][] columnsPosibilities = new int[columns][rows];
 		generatePosibilities(rows, columns, rowsPosibilities, columnsPosibilities);
-
+		System.out.println("Wollen sie gegen einen Computer spielen?");
+		do {
+			input = "";
+			try {
+				input = sc.next();
+			} catch (java.util.InputMismatchException e) {
+				// Clear Scanner
+				while (sc.hasNext())
+					sc.nextLine();
+			}
+		} while (!(input.toLowerCase().contains("j") || input.toLowerCase().contains("n"))
+				&& !(input.toLowerCase().contains("j") && input.toLowerCase().contains("n")));
+		boolean computerOpponent = (input.contains("j")) ? true : false;
 		// TODO add CPU opponent
 		boolean currentPlayer = true;
 		int inputRow;
 		int inputColumn;
 		do {
 			printField(field);
+			if (!currentPlayer && computerOpponent) {
+				computerTurn(field, rowsPosibilities, columnsPosibilities);
+				printField(field);
+				checkPosibilities(field, playing, checkHorizontal, checkVertical, checkDiagonal, columnsPosibilities,
+						rowsPosibilities);
+				currentPlayer = !currentPlayer;
+				continue;
+
+			}
 			boolean valid = false;
 			do {
 				try {
 					System.out.println((currentPlayer ? "Spieler1" : "Spieler2") + " ist am Zug");
 					inputRow = getNextInt(sc, "Geben sie die Zeile ihrer Auswahl ein") - 1;
 					inputColumn = getNextInt(sc, "Geben sie die Spalte ihrer Auswahl ein") - 1;
-					if(field[inputRow][inputColumn] == 0) {
-						field[inputRow][inputColumn] = (currentPlayer)? 1 : 2;
-					}else {
+					if (field[inputRow][inputColumn] == 0) {
+						field[inputRow][inputColumn] = (currentPlayer) ? 1 : 2;
+					} else {
 						System.out.println("Dieses Feld ist bereits besetzt bitte geben sie ein leeres Feld ein");
 						continue;
 					}
-					
+
 					checkPosibilities(field, playing, checkHorizontal, checkVertical, checkDiagonal,
 							columnsPosibilities, rowsPosibilities);
 					currentPlayer = !currentPlayer;
@@ -209,6 +232,34 @@ public class TicTacToe {
 			System.out.print("\n");
 		}
 
+	}
+
+	public void computerTurn(int[][] field, int[][] rowsPosibilities, int[][] columnsPosibilities) {
+		boolean rows = (((int) (Math.random() * 2)) != 0) ? true : false;
+		int[] entry;
+		int row;
+		int column;
+		if (rows) {
+			do {
+				do {
+					row = (int) (Math.random() * rowsPosibilities.length);
+					entry = rowsPosibilities[row];
+					System.out.println(row);
+				} while (entry == null);
+
+				column = (int) (Math.random() * rowsPosibilities[row].length);
+			} while (field[row][column] != 0);
+		} else {
+			do {
+				do {
+					column = (int) (Math.random() * rowsPosibilities.length);
+					entry = columnsPosibilities[column];
+				} while (entry == null);
+
+				row = (int)( Math.random() * rowsPosibilities[column].length);
+			} while (field[row][column] != 0);
+		}
+		field[row][column] = 2;
 	}
 
 	public int getNextInt(Scanner sc, String prompt) {
