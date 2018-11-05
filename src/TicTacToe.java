@@ -5,9 +5,17 @@ public class TicTacToe {
 	//Create own Boolean class that is passed by reference
 	public class myBoolean {
 		public boolean value;
+		public boolean rows;
+		public boolean columns;
+		public boolean diagonal;
 
 		myBoolean(boolean val) {
 			this.value = val;
+		}
+		myBoolean(boolean rows, boolean columns, boolean diagonal){
+			this.rows = rows;
+			this.columns = columns;
+			this.diagonal = diagonal;
 		}
 	}
 
@@ -48,9 +56,7 @@ public class TicTacToe {
 
 		// Initialize variables
 		myBoolean playing = new myBoolean(true);
-		myBoolean checkHorizontal = new myBoolean(true);
-		myBoolean checkVertical = new myBoolean(true);
-		myBoolean checkDiagonal = new myBoolean((rows == columns) ? true : false);
+		myBoolean check = new myBoolean(true, true, true);
 		int[][] field = new int[rows][columns];
 		int[][] rowsPosibilities = new int[rows][columns];
 		int[][] columnsPosibilities = new int[columns][rows];
@@ -82,11 +88,11 @@ public class TicTacToe {
 			//Computers turn
 			if (!currentPlayer && computerOpponent) {
 				//get a value for the comnputers turn
-				computerTurn(field, rowsPosibilities, columnsPosibilities, checkHorizontal, checkVertical);
+				computerTurn(field, rowsPosibilities, columnsPosibilities, check);
 				//print the field again
 				printField(field);
 				//Check if the computer won or there's a draw
-				checkPosibilities(field, playing, checkHorizontal, checkVertical, checkDiagonal, columnsPosibilities,
+				checkPosibilities(field, playing, check, columnsPosibilities,
 						rowsPosibilities);
 				//Switch current Player 
 				currentPlayer = !currentPlayer;
@@ -107,12 +113,11 @@ public class TicTacToe {
 						continue;
 					}
 					//check if the player won or ther's a draw
-					checkPosibilities(field, playing, checkHorizontal, checkVertical, checkDiagonal,
-							columnsPosibilities, rowsPosibilities);
+					checkPosibilities(field, playing, check, columnsPosibilities, rowsPosibilities);
 					//Switch current Player 
 					currentPlayer = !currentPlayer;
 					//If the programm got here the input is valid and the loop can be exited
-					valid = true;
+					valid = true;					
 				} catch (java.lang.ArrayIndexOutOfBoundsException e) {
 					System.out.println("Bitte geben sie einen Wert ein der innerhalb des Spielfelds liegt");
 				}
@@ -124,7 +129,7 @@ public class TicTacToe {
 	}
 
 	//Fill the arrays
-	public static void generatePosibilities(int rows, int columns, int[][] rowsPosibilities,
+	public void generatePosibilities(int rows, int columns, int[][] rowsPosibilities,
 			int[][] columnsPosibilities) {
 		//generate all posibilities to win by having three in a vertical row
 		for (int i = 0; i < columnsPosibilities.length; i++) {
@@ -142,11 +147,10 @@ public class TicTacToe {
 	}
 	
 	//Check all posibilities and determine if someone won or there's a draw
-	public static void checkPosibilities(int[][] field, myBoolean playing, myBoolean checkHorizontal,
-			myBoolean checkVertical, myBoolean checkDiagonal, int[][] columnsPosibilities, int[][] rowsPosibilities) {
+	public void checkPosibilities(int[][] field, myBoolean playing, myBoolean check, int[][] columnsPosibilities, int[][] rowsPosibilities) {
 		//Only check columnPosibilities if there are any left
-		if (checkVertical.value) {
-			checkVertical.value = false;
+		if (check.columns) {
+			check.columns = false;
 			for (int column = 0; column < columnsPosibilities.length; column++) {
 				//Skip deleted posibilities
 				if (columnsPosibilities[column] == null)
@@ -162,7 +166,7 @@ public class TicTacToe {
 					continue;
 				}
 				// If the programm gets here there is atleast one posibility left
-				checkVertical.value = true;
+				check.columns= true;
 				//Check if either player won
 				if (!columnString.contains("0")) {
 					if (columnString.contains("1")) {
@@ -176,8 +180,8 @@ public class TicTacToe {
 			}
 		}
 		//Only check rowPosibilities if there are any left
-		if (checkHorizontal.value) {
-			checkHorizontal.value = false;
+		if (check.rows) {
+			check.rows = false;
 			for (int row = 0; row < rowsPosibilities.length; row++) {
 				//Skip *deleted* posibilites
 				if (rowsPosibilities[row] == null)
@@ -189,11 +193,11 @@ public class TicTacToe {
 				}
 				//Check if winning in this row is possible *delete* the entry if not
 				if (rowString.contains("1") && rowString.contains("2")) {
-					columnsPosibilities[row] = null;
+					rowsPosibilities[row] = null;
 					continue;
 				}
 				//If the programm gets here there is atleast one posibility left
-				checkHorizontal.value = true;
+				check.rows = true;
 				//Check if either player won
 				if (!rowString.contains("0")) {
 					if (rowString.contains("1")) {
@@ -208,21 +212,22 @@ public class TicTacToe {
 		}
 		
 		//Check diagonal possibilities if there are any left
-		if (checkDiagonal.value)
-			checkDiagonalPosibilities(field, checkDiagonal, playing);
+		if (check.diagonal)
+			checkDiagonalPosibilities(field, check, playing);
 		//Check whether there are any possibilities left if not print draw and stop the game
-		if (!(checkHorizontal.value || checkVertical.value || checkDiagonal.value)) {
+		if (!(check.rows || check.columns || check.diagonal)) {
 			playing.value = false;
+			printField(field);
 			System.out.println("Draw, there is no posibility to win left");
 		}
 	}
 	
-	public static void checkDiagonalPosibilities(int[][] field, myBoolean checkDiagonal, myBoolean playing) {
+	public void checkDiagonalPosibilities(int[][] field, myBoolean check, myBoolean playing) {
 
 		//InitializeVariables
 		String diaString = "";
 		String diaString2 = "";
-		checkDiagonal.value = false;
+		check.diagonal = false;
 		//Generate diagonal Strings
 		for (int i = 0, j = field[0].length - 1; i < field[0].length; i++, j--) {
 			diaString += field[i][i];
@@ -244,7 +249,7 @@ public class TicTacToe {
 				}
 			}
 			//If this point is reached there is atleast one posibility to win  diagonally left 
-			checkDiagonal.value = true;
+			check.diagonal = true;
 		}
 
 		
@@ -252,39 +257,43 @@ public class TicTacToe {
 	}
 	//print the current playing field
 	public void printField(int[][] field) {
-		//Top line
+		//initialize counter
+		int counter = 1;
+		System.out.print(" ");
+		//Top line with column numbers
 		for (int i = 0; i < field[0].length; i++) {
-			System.out.print("____");
+			System.out.printf("__%d_", i+1);
 		}
 		//rows with separators
-		System.out.print("\n");
+		System.out.printf("\n%d", counter++);
 		for (int[] row : field) {
 			System.out.print("| ");
 			for (int entry : row) {
-				System.out.print(entry + " | ");
+				char output = (entry == 0) ? ' ' : (entry == 1) ? 'x' : 'o';
+				System.out.print(output + " | ");
 			}
-			System.out.print("\n|");
+			System.out.print("\n |");
 			//Separator between rows
 			for (int i = 0; i < row.length; i++) {
 				System.out.print("___|");
 			}
 			//new line after each row
-			System.out.print("\n");
+			System.out.printf("\n%s", (counter <= field.length) ? String.valueOf(counter++) : "");
 		}
 
 	}
 
-	public void computerTurn(int[][] field, int[][] rowsPosibilities, int[][] columnsPosibilities, myBoolean checkHorizontal, myBoolean checkVertical) {
+	public void computerTurn(int[][] field, int[][] rowsPosibilities, int[][] columnsPosibilities, myBoolean check) {
 		//Initialize variables
 		boolean rows = true;
 		int row;
 		int column;
 		int[] entry;
 		//Check which posibilites are available and choose the way the computers turn is generated accordingly
-		if(checkHorizontal.value && checkVertical.value) {
+		if(check.rows && check.columns) {
 			rows = (((int) (Math.random() * 2)) != 0) ? true : false;
-		}else if(checkHorizontal.value || checkVertical.value) {
-			rows = (checkHorizontal.value) ? true : false;
+		}else if(check.rows || check.columns) {
+			rows = (check.rows) ? true : false;
 		}else {
 			//Choose a random empty cell
 			do {
