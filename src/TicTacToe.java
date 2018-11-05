@@ -82,7 +82,7 @@ public class TicTacToe {
 			//Computers turn
 			if (!currentPlayer && computerOpponent) {
 				//get a value for the comnputers turn
-				computerTurn(field, rowsPosibilities, columnsPosibilities);
+				computerTurn(field, rowsPosibilities, columnsPosibilities, checkHorizontal, checkVertical);
 				//print the field again
 				printField(field);
 				//Check if the computer won or there's a draw
@@ -216,21 +216,24 @@ public class TicTacToe {
 			System.out.println("Draw, there is no posibility to win left");
 		}
 	}
-
+	
 	public static void checkDiagonalPosibilities(int[][] field, myBoolean checkDiagonal, myBoolean playing) {
 
-		boolean checkDia = true;
+		//InitializeVariables
 		String diaString = "";
 		String diaString2 = "";
-
+		checkDiagonal.value = false;
+		//Generate diagonal Strings
 		for (int i = 0, j = field[0].length - 1; i < field[0].length; i++, j--) {
 			diaString += field[i][i];
 			diaString2 += field[i][j];
 
 		}
+		//Skip if it is not possible to win 
 		for (String diagonalString : (new String[] { diaString, diaString2 })) {
 			if (diagonalString.contains("1") && diagonalString.contains("2")) {
 				continue;
+			//Check if either player won
 			} else if (!diagonalString.contains("0")) {
 				if (diagonalString.contains("1")) {
 					System.out.println("Player 1 wins");
@@ -240,17 +243,20 @@ public class TicTacToe {
 					playing.value = false;
 				}
 			}
-			checkDia = true;
+			//If this point is reached there is atleast one posibility to win  diagonally left 
+			checkDiagonal.value = true;
 		}
 
-		checkDiagonal.value = checkDia;
+		
 
 	}
-
+	//print the current playing field
 	public void printField(int[][] field) {
+		//Top line
 		for (int i = 0; i < field[0].length; i++) {
 			System.out.print("____");
 		}
+		//rows with separators
 		System.out.print("\n");
 		for (int[] row : field) {
 			System.out.print("| ");
@@ -258,57 +264,90 @@ public class TicTacToe {
 				System.out.print(entry + " | ");
 			}
 			System.out.print("\n|");
+			//Separator between rows
 			for (int i = 0; i < row.length; i++) {
 				System.out.print("___|");
 			}
+			//new line after each row
 			System.out.print("\n");
 		}
 
 	}
 
-	public void computerTurn(int[][] field, int[][] rowsPosibilities, int[][] columnsPosibilities) {
-		boolean rows = (((int) (Math.random() * 2)) != 0) ? true : false;
-		int[] entry;
+	public void computerTurn(int[][] field, int[][] rowsPosibilities, int[][] columnsPosibilities, myBoolean checkHorizontal, myBoolean checkVertical) {
+		//Initialize variables
+		boolean rows = true;
 		int row;
 		int column;
+		int[] entry;
+		//Check which posibilites are available and choose the way the computers turn is generated accordingly
+		if(checkHorizontal.value && checkVertical.value) {
+			rows = (((int) (Math.random() * 2)) != 0) ? true : false;
+		}else if(checkHorizontal.value || checkVertical.value) {
+			rows = (checkHorizontal.value) ? true : false;
+		}else {
+			//Choose a random empty cell
+			do {
+				row = (int) (Math.random() * field.length);
+				column = (int) (Math.random() * field[row].length);
+			}while(field[row][column] != 0);
+			
+			field[row][column] = 2;
+			return;
+		}
+		
+		
+		//Randomly select a cell in one of the rows/columns that still have the potential to lead to a victory
 		if (rows) {
 			do {
 				do {
+					//Select a random entry from the array
 					row = (int) (Math.random() * rowsPosibilities.length);
 					entry = rowsPosibilities[row];
 					System.out.println(row);
+				//make sure the entry hasn't been deleted
 				} while (entry == null);
-
+				//Select a random entry
 				column = (int) (Math.random() * rowsPosibilities[row].length);
+			//make sure the cell is empty
 			} while (field[row][column] != 0);
 		} else {
 			do {
 				do {
+					//Select a random entry from the array
 					column = (int) (Math.random() * rowsPosibilities.length);
 					entry = columnsPosibilities[column];
+				//make sure the entry hasn't been deleted
 				} while (entry == null);
-
+				//Select a random entry 
 				row = (int)( Math.random() * rowsPosibilities[column].length);
+			//make sure the cell is empty
 			} while (field[row][column] != 0);
 		}
 		field[row][column] = 2;
 	}
-
+	//Get a Integer input with error handling
 	public int getNextInt(Scanner sc, String prompt) {
+		//Initialize variables
 		boolean valid = false;
 		int input = 0;
+		
 		do {
 			try {
+				//Print the prompt and wait for input
 				System.out.println(prompt);
 				input = sc.nextInt();
+				//If the input is valid and there is no exception the loop can be exited
 				valid = true;
 			} catch (java.util.InputMismatchException e) {
 				// Clear Scanner
 				if (sc.hasNext())
 					sc.nextLine();
+				//Print error message
 				System.out.println("Ungueltige Eingabe, bitte geben sie eine ganze Zahl ein");
 			}
 		} while (!valid);
+		//return the int
 		return input;
 	}
 }
